@@ -1,8 +1,12 @@
 {
   "name": "pi-next-cue",
-  "version": "1.0.0",
-  "description": "Predicts your next prompt after each agent turn — shown as a hint above the editor",
-  "keywords": ["pi", "pi-package", "pi-extension"],
+  "version": "1.0.1",
+  "description": "Predicts your next prompt after each agent turn — Tab to fill, Enter to send.",
+  "keywords": [
+    "pi",
+    "pi-package",
+    "pi-extension"
+  ],
   "license": "MIT",
   "author": "ouzhenkun",
   "repository": {
@@ -17,6 +21,8 @@
     "@earendil-works/pi-coding-agent": "*"
   },
   "pi": {
-    "extensions": ["./index.ts"]
+    "extensions": [
+      "./index.ts"
+    ]
   }
 }
