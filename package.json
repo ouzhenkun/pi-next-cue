@@ -1,0 +1,22 @@
+{
+  "name": "pi-next-cue",
+  "version": "1.0.0",
+  "description": "Predicts your next prompt after each agent turn — shown as a hint above the editor",
+  "keywords": ["pi", "pi-package", "pi-extension"],
+  "license": "MIT",
+  "author": "ouzhenkun",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ouzhenkun/pi-next-cue.git"
+  },
+  "homepage": "https://github.com/ouzhenkun/pi-next-cue",
+  "bugs": {
+    "url": "https://github.com/ouzhenkun/pi-next-cue/issues"
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": ["./index.ts"]
+  }
+}
