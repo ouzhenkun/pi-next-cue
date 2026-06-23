@@ -29,7 +29,6 @@ What to suggest:
 - Tool failed -> a specific retry/fix based on the failure
 - Tool succeeded -> the next useful step
 - Agent proposed a clear next action -> a short affirmation is often enough
-- If context is too thin to predict a useful reply, return [skip]
 
 Tone:
 - Match the language and register of recent user messages
@@ -38,7 +37,7 @@ Tone:
 
 Rules:
 - Return ONE message, under 60 chars, nothing else
-- If no useful suggestion exists, return exactly: [skip]
+- Always give a concrete suggestion; never return a placeholder like [skip] or [none]
 - The suggestion must advance or unblock the workflow
 - A short confirmation counts as advancing when it lets the agent proceed
 - Be specific to this conversation, not generic
@@ -47,9 +46,8 @@ Rules:
 - If the assistant only offered a pending action, a brief confirmation is allowed
 - Learn from user corrections in the conversation; avoid rejected directions
 - If a slash command is the obvious next action, suggest only the command
-- Never output a generic question like "what's next" or "what should I do" — return [skip] instead`;
+- If the context is genuinely too thin to infer a specific next step, suggest a brief generic nudge like "ok" or "continue"`;
 
-const SKIP_TOKEN = "[skip]";
 const MAX_CORRECTIONS = 5;
 
 type HintType = "recall" | "cue";
@@ -237,10 +235,10 @@ export default function (pi: ExtensionAPI) {
         .replace(/^["'`]|["'`]$/g, "")
         .slice(0, 60);
 
-      if (suggestion && suggestion !== SKIP_TOKEN && !abort.signal.aborted) {
-        setHint(suggestion, "cue");
-        lastSuggestion = suggestion;
-      }
+      if (abort.signal.aborted || !suggestion) return;
+
+      setHint(suggestion, "cue");
+      lastSuggestion = suggestion;
     } catch {
       // Suggestion is optional — fail silently
     } finally {
@@ -293,14 +291,24 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  // Generate suggestion after agent completes
+  // Generate suggestion after agent completes.
+  // NOTE: AgentEndEvent does not carry willRetry (it's only on the internal
+  // AgentSessionEvent), so we detect retry/error via the last assistant
+  // message's stopReason to avoid suggesting on a failed/retrying turn.
   pi.on("agent_end", async (event: any, ctx) => {
-    if (event.willRetry || !event.messages?.length) return;
+    if (!event.messages?.length) return;
 
     const lastAssistant = [...event.messages]
       .reverse()
       .find((m: any) => m.role === "assistant");
     if (!lastAssistant) return;
+
+    if (
+      lastAssistant.stopReason === "error" ||
+      lastAssistant.stopReason === "aborted"
+    ) {
+      return;
+    }
 
     const hasText = lastAssistant.content?.some(
       (b: any) => b.type === "text" && b.text?.trim(),
