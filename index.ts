@@ -348,7 +348,7 @@ export default function (pi: ExtensionAPI) {
           if (matchesKey(data, sendKey)) {
             const hint = currentHint;
             setHint(null, null);
-            pi.sendUserMessage(hint);
+            pi.sendUserMessage(hint, { deliverAs: "followUp" });
             return;
           }
         }
