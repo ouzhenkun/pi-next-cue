@@ -54,7 +54,7 @@ Pi-next-cue uses your session's current model by default. To use a specific fast
 ```json
 {
   "provider": "deepseek",
-  "model": "deepseek-chat",
+  "model": "deepseek-v4-flash",
   "keys": {
     "fill": "tab",
     "send": "enter"
