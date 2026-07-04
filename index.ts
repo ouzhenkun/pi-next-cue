@@ -94,8 +94,13 @@ export default function (pi: ExtensionAPI) {
     if (currentHint) setHint(currentHint, hintType);
   }
 
-  pi.events.on("pi-next-cue:pause", pauseHint);
-  pi.events.on("pi-next-cue:resume", resumeHint);
+  const offPause = pi.events.on("pi-next-cue:pause", pauseHint);
+  const offResume = pi.events.on("pi-next-cue:resume", resumeHint);
+
+  pi.on("session_shutdown", async () => {
+    offPause();
+    offResume();
+  });
 
   // Load config from ~/.pi/agent/pi-next-cue.json
   let userConfig: { provider?: string; model?: string; keys?: { fill?: string; send?: string } } = {};
