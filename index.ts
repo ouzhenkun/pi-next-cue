@@ -222,11 +222,6 @@ export default function (pi: ExtensionAPI) {
           headers: auth.headers,
           signal: abort.signal,
           maxTokens: 40,
-          onPayload: (payload: any) => {
-            // Disable thinking for models that support it (e.g. DeepSeek)
-            payload.thinking = { type: "disabled" };
-            return payload;
-          },
         },
       );
 
