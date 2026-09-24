@@ -16,7 +16,7 @@ import {
   getAgentDir,
   type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
-import { complete, type UserMessage } from "@earendil-works/pi-ai";
+import type { UserMessage } from "@earendil-works/pi-ai";
 import { matchesKey } from "@earendil-works/pi-tui";
 
 const SYSTEM_PROMPT = `Predict the user's most likely next reply as one short message.
@@ -135,9 +135,7 @@ export default function (pi: ExtensionAPI) {
 
     const model = resolveModel(ctx);
     if (!model) return;
-
-    const auth = await ctx.modelRegistry.getApiKeyAndHeaders(model);
-    if (!auth.ok || !auth.apiKey) return;
+    if (!ctx.modelRegistry.hasConfiguredAuth(model)) return;
 
     // Gather recent messages for context
     const branch = ctx.sessionManager.getBranch();
@@ -214,12 +212,10 @@ export default function (pi: ExtensionAPI) {
     suggestionAbort = abort;
 
     try {
-      const response = await complete(
+      const response = await ctx.modelRegistry.complete(
         model,
         { systemPrompt: SYSTEM_PROMPT, messages: [userMessage] },
         {
-          apiKey: auth.apiKey,
-          headers: auth.headers,
           signal: abort.signal,
           maxTokens: 40,
         },
