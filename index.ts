@@ -332,7 +332,7 @@ export default function (pi: ExtensionAPI) {
     ctx.ui.setEditorComponent((tui, theme, keybindings) => {
       const base = prevFactory
         ? prevFactory(tui, theme, keybindings)
-        : new CustomEditor(tui, theme, keybindings);
+        : new CustomEditor(tui, theme, keybindings, { embedWorkingStatus: true });
 
       const originalHandleInput = base.handleInput.bind(base);
 
