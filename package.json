@@ -1,6 +1,6 @@
 {
   "name": "pi-next-cue",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Predicts your next prompt after each agent turn — Tab to fill, Enter to send.",
   "keywords": [
     "pi",
